@@ -67,10 +67,28 @@ void got_start()
 		rand_millisec =  rand() % upper_limit_millisec_to_wait;
 
 	  /**************** STUDENT TO FILL IN START HERE ********************/
-		// Step 1
-		// Step 2
-		// Step 3
-		// Step 4
+
+		// 1) Display "----"
+		Display_Waiting();
+
+		// 2) Wait
+		HAL_Delay(rand_millisec);
+
+		// 3) Turn on all segments (or show “GO”)
+		//Display_All();
+		//  Or if you want “GO” specifically, do:
+		//MultiFunctionShield_Single_Digit_Display(2, '6');
+		//MultiFunctionShield_Single_Digit_Display(1, '0');
+
+		HAL_GPIO_TogglePin(LED_D1_GPIO_Port, LED_D1_Pin);
+		HAL_GPIO_TogglePin(LED_D2_GPIO_Port, LED_D2_Pin);
+		HAL_GPIO_TogglePin(LED_D3_GPIO_Port, LED_D3_Pin);
+		HAL_GPIO_TogglePin(LED_D4_GPIO_Port, LED_D4_Pin);
+
+		// 4) Start your reaction timer (e.g., TIM3)
+		HAL_TIM_Base_Start(&htim3);
+		// Or HAL_TIM_Base_Start_IT(&htim3) if you’re using interrupts
+
 	  /**************** STUDENT TO FILL IN END  HERE ********************/
 	}
 void got_stop()
@@ -85,13 +103,15 @@ void got_stop()
 
 
 	  /**************** STUDENT TO FILL IN START HERE ********************/
-      // 1.) Stop the random timer // Random timer is timer3
+	// 1) Stop the reaction timer (TIM3)
+	    HAL_TIM_Base_Stop(&htim3);
+	    // or HAL_TIM_Base_Stop_IT(&htim3), depending on how you started it
 
-      // 2.) Read the value of the timer -- this step provided
-		last_reaction_time_in_millisec = __HAL_TIM_GetCounter(&htim3) / 10; // Why is it divide by 10?
+	    // 2) Read timer value (divide by 10 if each tick = 0.1 ms)
+	    last_reaction_time_in_millisec = __HAL_TIM_GetCounter(&htim3) / 10;
 
-	  // 3.) Display the value
-
+	    // 3) Display the value on the 7-segment
+	    MultiFunctionShield_Display(last_reaction_time_in_millisec);
 
       /**************** STUDENT TO FILL IN END HERE ********************/
 		// Keep the best time in a global variable
